@@ -3,8 +3,11 @@ class dsu::install (
   $package_version = $::dsu::package_version,
   ) {
 
-    package {$package_name:
-      ensure  => $package_version,
-      require => Class['::dsu::repo'],
+
+    if $::operatingsystemmajrelease in ['7','8'] {
+      package {$package_name:
+        ensure  => $package_version,
+        require => Class['::dsu::repo'],
+      }
     }
 }
