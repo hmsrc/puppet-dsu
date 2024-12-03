@@ -3,6 +3,7 @@ class dsu::srvadmin::install (
   $srvadmin_package = $::dsu::srvadmin_package,
   $srvadmin_packages_java = $::dsu::srvadmin_packages_java,
   $srvadmin_packages_no_java = $::dsu::srvadmin_packages_no_java,
+  $srvadmin_packages_no_java_rhel_9 = $::dsu::srvadmin_packages_no_java_rhel_9,
   $srvadmin_version = $::dsu::srvadmin_version,
   $srvadmin_services = $::dsu::srvadmin_services,
   $srvadmin_java = 'srvadmin-jre',
@@ -20,8 +21,13 @@ class dsu::srvadmin::install (
     else {
       notify{"srvadmin_packages: will install multiple packages":}
       include ::dsu::repo
-      #Install select dell packages from packages Array
-      ensure_packages ($srvadmin_packages_no_java, {ensure => present})
+      if $::operatingsystemmajrelease in ['7','8'] {
+        #Install select dell packages from packages Array
+        ensure_packages ($srvadmin_packages_no_java, {ensure => present})
+      }
+      else{
+         ensure_packages ($srvadmin_packages_no_java_rhel_9, {ensure => present})
+      }
       notify{"srvadmin_packages: installed multiple packages: ${srvadmin_packages}":}
       # If installed this will uninstall srvadmin-jre, -tomcat, -wenbserver, -all
       ensure_packages ($srvadmin_packages_java, {ensure => absent})
